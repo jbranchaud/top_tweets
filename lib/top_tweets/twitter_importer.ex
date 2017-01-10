@@ -22,9 +22,8 @@ defmodule TopTweets.TwitterImporter do
   end
 
   def insert_tweets(tweets) do
-    tweets
-    |> Enum.map(&bundle_tweet/1)
-    |> insert_all_tweets()
+    bundled_tweets = Enum.map(tweets, &bundle_tweet/1)
+    TopTweets.Repo.insert_all("tweets", bundled_tweets)
   end
 
   def bundle_tweet(tweet_data) do
@@ -47,9 +46,5 @@ defmodule TopTweets.TwitterImporter do
     rfc1123
     |> Timex.parse!("{RFC1123}")
     |> Ecto.DateTime.cast!()
-  end
-
-  def insert_all_tweets(tweets) do
-    TopTweets.Repo.insert_all("tweets", tweets, returning: [:id])
   end
 end
